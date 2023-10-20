@@ -10,3 +10,16 @@ def fib(n: Int): Int =
     else loop(current + 1, prevNum, currentSum)
 
   if n == 0 then 0 else if n == 1 then 1 else loop(2, 0, 1)
+
+// Exercise 2.2
+
+// Check whether array is sorted, given a comparison function
+
+def isSorted[A](as: Array[A], gt: (A, A) => Boolean): Boolean =
+  def loop(n: Int): Boolean =
+    if n == as.length - 1
+    then true
+    else if gt(as(n + 1), as(n)) then loop(n + 1)
+    else false
+
+  if as.length == 0 || as.length == 1 then true else loop(0)
