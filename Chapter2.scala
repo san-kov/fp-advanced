@@ -23,3 +23,24 @@ def isSorted[A](as: Array[A], gt: (A, A) => Boolean): Boolean =
     else false
 
   if as.length == 0 || as.length == 1 then true else loop(0)
+
+// Exercise 2.3
+
+// Implement curry
+
+def curry[A, B, C](f: (A, B) => C): A => (B => C) =
+  (a: A) => (b: B) => f(a, b)
+
+// Exercise 2.4
+
+// Implement uncurry
+
+def uncurry[A, B, C](f: A => B => C): (A, B) => C =
+  (a: A, b: B) => f(a)(b)
+
+// Exercise 2.5
+
+// Implement function composition
+
+def compose[A, B, C](f: B => C, g: A => B): A => C =
+  (a: A) => f(g(a))
