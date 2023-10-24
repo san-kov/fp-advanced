@@ -116,3 +116,126 @@ def lengthLeft[A](list: List[A]): Int =
 
 def reverseFold[A](list: List[A]): List[A] =
   foldLeft(list, Nil, (result: List[A], head: A) => Cons(head, result))
+
+// Exercise 3.13
+
+// Write foldRight in terms of foldLeft
+def foldRightL[A, B](list: List[A], acc: B, f: (B, A) => B): B =
+  foldLeft(reverseFold(list), acc, f)
+
+// Exercise 3.14
+
+// Write append in terms of fold
+
+def appendFold[A](as: List[A], bs: List[A]): List[A] =
+  foldRight(as, bs, (head, result) => Cons(head, result))
+
+// Exercise 3.15
+
+// Write a function that concatenates a list of lists into a single list
+
+def concat[A](list: List[List[A]]): List[A] =
+  foldRight(
+    list,
+    Nil,
+    (head: List[A], result: List[A]) => appendFold(head, result)
+  )
+
+// Exercise 3.16
+
+// Write a function that transforms a list of integers by adding 1 to each element
+
+def incList(list: List[Int]): List[Int] = list match
+  case Nil              => Nil
+  case Cons(head, tail) => Cons(head + 1, incList(tail))
+
+// Exercise 3.17
+
+// Write a function that turns each value in a List[Double] into a String.
+
+def doublesToStrings(list: List[Double]): List[String] = list match
+  case Nil              => Nil
+  case Cons(head, tail) => Cons(head.toString(), doublesToStrings(tail))
+
+// Exercise 3.18
+
+// Write map
+
+def map[A, B](list: List[A], f: (A) => B): List[B] = list match
+  case Nil              => Nil
+  case Cons(head, tail) => Cons(f(head), map(tail, f))
+
+// Exercise 3.19
+
+// Write filter
+
+def filter[A](list: List[A], f: (A) => Boolean): List[A] = list match
+  case Nil => Nil
+  case Cons(head, tail) =>
+    if f(head) then Cons(head, filter(tail, f)) else filter(tail, f)
+
+// Exercise 3.20
+
+// Write flatMap
+
+def flatMap[A, B](list: List[A], f: A => List[B]): List[B] = concat(
+  map(list, f)
+)
+
+// Exercise 3.21
+
+// Use flatMap to implement filter
+
+def filterFlatmap[A](list: List[A], f: A => Boolean): List[A] =
+  flatMap(list, (a: A) => if f(a) then List(a) else Nil)
+
+// Exercise 3.22
+
+// Add elements of two lists
+
+def addTwoLists(a: List[Int], b: List[Int]): List[Int] = a match
+  case Nil =>
+    b match
+      case Nil         => Nil
+      case Cons(h, tl) => sys.error("Lists have different size")
+
+  case Cons(head, tail) =>
+    b match
+      case Nil                => sys.error("Lists have different size")
+      case Cons(head2, tail2) => Cons(head + head2, addTwoLists(tail, tail2))
+
+// Exercise 3.23
+
+// Generalize the previous function
+
+def combineLists[A, B](a: List[A], b: List[A], f: (A, A) => B): List[B] =
+  a match
+    case Nil =>
+      b match
+        case Nil         => Nil
+        case Cons(h, tl) => sys.error("Lists have different size")
+
+    case Cons(head, tail) =>
+      b match
+        case Nil => sys.error("Lists have different size")
+        case Cons(head2, tail2) =>
+          Cons(f(head, head2), combineLists(tail, tail2, f))
+
+// Exercise 3.24
+
+// Implement hasSubSequence
+def subFromStart[A](list: List[A], sub: List[A]): Boolean = sub match
+  case Nil => true
+  case Cons(head, tail) =>
+    list match
+      case Nil => false
+      case Cons(head2, tail2) =>
+        if head == head2 then subFromStart(tail2, tail) else false
+
+def hasSubSequence[A](list: List[A], sub: List[A]): Boolean = sub match
+  case Nil => true
+  case _ =>
+    list match
+      case Nil => false
+      case Cons(_, tail) =>
+        subFromStart(list, sub) || hasSubSequence(tail, sub)
