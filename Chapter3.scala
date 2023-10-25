@@ -1,4 +1,5 @@
 import List.*
+import Tree.*
 // Exercise 3.2
 
 // Implement tail function
@@ -239,3 +240,53 @@ def hasSubSequence[A](list: List[A], sub: List[A]): Boolean = sub match
       case Nil => false
       case Cons(_, tail) =>
         subFromStart(list, sub) || hasSubSequence(tail, sub)
+
+// Exercise 3.25
+
+// Write a function, maximum, that returns the maximum element in a Tree[Int]
+
+def maximum(tree: Tree[Int]): Int = tree match
+  case Leaf(value)         => value
+  case Branch(left, right) => maximum(left).max(maximum(right))
+
+// Exercise 3.26
+
+// Write a function, depth, that returns the maximum path length from the root of a tree to any leaf
+
+def depth[A](tree: Tree[A]): Int = tree match
+  case Leaf(value)         => 1
+  case Branch(left, right) => (1 + depth(left)).max(1 + depth(right))
+
+// Exercise 3.27
+
+// Write map for Tree
+
+def mapTree[A, B](tree: Tree[A], f: A => B): Tree[B] = tree match
+  case Leaf(value)         => Leaf(f(value))
+  case Branch(left, right) => Branch(mapTree(left, f), mapTree(right, f))
+
+// Exercise 3.28
+
+// Write fold for Tree
+
+def foldTree[A, B](tree: Tree[A], f: (B, B) => B, acc: A => B): B = tree match
+  case Leaf(value)         => acc(value)
+  case Branch(left, right) => f(foldTree(left, f, acc), foldTree(right, f, acc))
+
+def sizeFold[A](tree: Tree[A]): Int = foldTree(
+  tree,
+  (leftResutl, rightResult) => (1 + leftResutl).max(1 + rightResult),
+  (_) => 1
+)
+
+def maxFold(tree: Tree[Int]): Int = foldTree(
+  tree,
+  (leftResult, rightResult) => leftResult.max(rightResult),
+  value => value
+)
+
+def mapFold[A, B](tree: Tree[A], f: A => B): Tree[B] = foldTree(
+  tree,
+  (leftResult, rightResult) => Branch(leftResult, rightResult),
+  (value) => Leaf(f(value))
+)
